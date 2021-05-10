@@ -12,6 +12,7 @@ from sentence_transformers import SentenceTransformer
 from rank.tf_idf import *
 from rank.bert import *
 from rank.doc2vec import *
+from rank.glove import *
 
 # preconditions
 # nltk.download('stopwords')
@@ -78,6 +79,11 @@ class TestCase(unittest.TestCase):
     def test_word2vec(self):
         doc2vec_wrapper = Doc2vecWrapper(stop_words_l=stop_words_l)
         document_embeddings = doc2vec_wrapper.get_embeddings(doc_list=documents)
+        print_similarity(document_embeddings)
+
+    def test_glove(self):
+        glove_wrapper = GloveWrapper(stop_words_l=stop_words_l)
+        document_embeddings = glove_wrapper.get_embeddings(doc_list=documents)
         print_similarity(document_embeddings)
 
 
