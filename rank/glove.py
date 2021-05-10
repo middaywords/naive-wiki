@@ -32,6 +32,7 @@ class GloveWrapper:
         # reading Glove word embeddings into a dictionary with "word" as key and values as word vectors
         embeddings_index = dict()
 
+        # in http://nlp.stanford.edu/data/glove.6B.zip
         with open('../../glove.6B/glove.6B.100d.txt') as file:
             for line in file:
                 values = line.split()
@@ -51,16 +52,17 @@ class GloveWrapper:
         # prepare tfidf things
         tfidf_vectoriser = TfidfVectorizer()
         tfidf_vectoriser.fit(documents_df.documents_cleaned)
-        tfidf_vectors = tfidf_vectoriser.transform(documents_df.documents_cleaned)
+        tfidf_vectors = tfidf_vectoriser.transform(documents_df.documents_cleaned).toarray()
 
         # calculating average of word vectors of a document weighted by tf-idf
         document_embeddings = np.zeros((len(tokenized_paded_documents), 100))
 
         words = tfidf_vectoriser.get_feature_names()
-
+        print(tfidf_vectors.shape)
         # instead of creating document-word embeddings, directly creating document embeddings
         for i in range(documents_df.shape[0]):
             for j in range(len(words)):
+                print(embedding_matrix[tokenizer.word_index[words[j]]].shape, tfidf_vectors[i][j].shape)
                 document_embeddings[i] += embedding_matrix[tokenizer.word_index[words[j]]] * tfidf_vectors[i][j]
 
         return document_embeddings

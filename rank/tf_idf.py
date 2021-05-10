@@ -21,6 +21,6 @@ class TfidfWrapper:
             re.sub(r'[^a-zA-Z]', ' ', w).lower() not in self.stop_words_l))
         tfidf_vectoriser = TfidfVectorizer()
         tfidf_vectoriser.fit(documents_df.documents_cleaned)
-        tfidf_vectors = tfidf_vectoriser.transform(documents_df.documents_cleaned)
+        tfidf_vectors = tfidf_vectoriser.transform(documents_df.documents_cleaned).toarray()
 
         return tfidf_vectors
