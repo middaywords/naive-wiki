@@ -68,7 +68,7 @@ def print_similarity(embeddings):
 class TestCase(unittest.TestCase):
     def test_tf_idf(self):
         tf_idf_wrapper = TfidfWrapper(stop_words_l=stop_words_l)
-        tfidf_vectors = tf_idf_wrapper.get_tfidf_vector(doc_list=documents)
+        tfidf_vectors = tf_idf_wrapper.get_embeddings(doc_list=documents)
         print_similarity(tfidf_vectors)
 
     def test_bert(self):

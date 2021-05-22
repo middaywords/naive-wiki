@@ -9,6 +9,7 @@ class BertWrapper:
         :param stop_words_l: words to be cleaned in
         """
         self.stop_words_l = stop_words_l
+        self.sbert_model = SentenceTransformer('bert-base-nli-mean-tokens')
 
     def get_embeddings(self, doc_list: list):
         """
@@ -19,8 +20,7 @@ class BertWrapper:
         documents_df['documents_cleaned'] = documents_df.documents.apply(lambda x: " ".join(
             re.sub(r'[^a-zA-Z]', ' ', w).lower() for w in x.split() if
             re.sub(r'[^a-zA-Z]', ' ', w).lower() not in self.stop_words_l))
-        sbert_model = SentenceTransformer('bert-base-nli-mean-tokens')
 
-        document_embeddings = sbert_model.encode(documents_df['documents_cleaned'])
+        document_embeddings = self.sbert_model.encode(documents_df['documents_cleaned'])
 
         return document_embeddings
