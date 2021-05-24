@@ -24,16 +24,15 @@ class Doc2vecWrapper:
 
         tagged_data = [TaggedDocument(words=word_tokenize(doc), tags=[i]) for i, doc in
                        enumerate(documents_df.documents_cleaned)]
-        model_d2v = Doc2Vec(vector_size=100, alpha=0.025, min_count=1)
+        model_d2v = Doc2Vec(vector_size=50, alpha=0.025, min_count=1)
 
         model_d2v.build_vocab(tagged_data)
 
-        for epoch in range(100):
-            model_d2v.train(tagged_data,
-                            total_examples=model_d2v.corpus_count,
-                            epochs=model_d2v.epochs)
+        model_d2v.train(tagged_data,
+                        total_examples=model_d2v.corpus_count,
+                        epochs=model_d2v.epochs)  # 10 epochs in default
 
-        document_embeddings = np.zeros((documents_df.shape[0], 100))
+        document_embeddings = np.zeros((documents_df.shape[0], 50))
 
         for i in range(len(document_embeddings)):
             document_embeddings[i] = model_d2v.dv[i]

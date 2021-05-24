@@ -9,7 +9,7 @@ class BertWrapper:
         :param stop_words_l: words to be cleaned in
         """
         self.stop_words_l = stop_words_l
-        self.sbert_model = SentenceTransformer('bert-base-nli-mean-tokens')
+        self.sbert_model = SentenceTransformer('paraphrase-MiniLM-L6-v2', device='cuda')
 
     def get_embeddings(self, doc_list: list):
         """
