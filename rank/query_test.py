@@ -8,6 +8,7 @@ import numpy as np
 
 from data import stopwords
 from rank.bert import BertWrapper
+from rank.count import CountWrapper
 from rank.doc2vec import Doc2vecWrapper
 from rank.glove import GloveWrapper
 from rank.tf_idf import TfidfWrapper
@@ -79,6 +80,14 @@ def test_different_ranking_algo(
         print(datetime.now())
         docs_embeddings = bert_wrapper.get_embeddings(doc_list=doc_list)
         print(datetime.now())
+    elif algo == 'count':
+        print('count search result')
+        print(datetime.now())
+        # most of time is spent on loading the model
+        count_wrapper = CountWrapper(stop_words_l=stop_words_l)
+        print(datetime.now())
+        docs_embeddings = count_wrapper.get_embeddings(doc_list=doc_list)
+        print(datetime.now())
     else:
         raise ValueError("Undefined ranking algorithm.")
     cosine_distance_mat = cosine_similarity([docs_embeddings[-1]], docs_embeddings[:-1])
@@ -106,8 +115,14 @@ def query_test(query: str):
     doc_list.append(query)
 
     stop_words_l = stopwords.en_stop_words
+    # algo_list = ['bert', 'tf-idf', 'glove', 'doc2vec', 'count']
+    # for algo in algo_list:
+    #     test_different_ranking_algo(
+    #         algo=algo,
+    #         doc_list=doc_list,
+    #         stop_words_l=stop_words_l)
     test_different_ranking_algo(
-        algo='bert',
+        algo='count',
         doc_list=doc_list,
         stop_words_l=stop_words_l)
 

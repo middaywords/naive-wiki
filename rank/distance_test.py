@@ -9,6 +9,8 @@ from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics.pairwise import cosine_similarity
 
 from sentence_transformers import SentenceTransformer
+
+from rank.count import CountWrapper
 from rank.tf_idf import *
 from rank.bert import *
 from rank.doc2vec import *
@@ -84,6 +86,11 @@ class TestCase(unittest.TestCase):
     def test_glove(self):
         glove_wrapper = GloveWrapper(stop_words_l=stop_words_l)
         document_embeddings = glove_wrapper.get_embeddings(doc_list=documents)
+        print_similarity(document_embeddings)
+
+    def test_count(self):
+        count_wrapper = CountWrapper(stop_words_l=stop_words_l)
+        document_embeddings = count_wrapper.get_embeddings(doc_list=documents)
         print_similarity(document_embeddings)
 
 
