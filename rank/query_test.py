@@ -15,7 +15,7 @@ from rank.doc2vec import Doc2vecWrapper
 from rank.glove import GloveWrapper
 from rank.tf_idf import TfidfWrapper
 from utils.io_utils import read_json
-from utils.wild_card import wild_card, correct_term
+from utils.wild_card import AutocorrectWC
 
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics.pairwise import cosine_similarity
@@ -112,6 +112,7 @@ def match_query_doc(query: str, search_res: list) -> list:
 
 
 def query_test(query: str):
+    corrector_wc = AutocorrectWC()
     term2doc_dict = read_term2doc_json()
     query = query.lower()
     query_terms = list(filter(None, re.split(r"[ ,_:#!(\){}&\+]", query)))
@@ -121,10 +122,10 @@ def query_test(query: str):
         possible_terms = []
         # wildcard
         if term.find('*') >= 0:
-            possible_terms = wild_card(term)
+            possible_terms = corrector_wc.wild_card(term)
         else:
             if term not in term2doc_dict.keys():
-                corrected_term = correct_term(term)
+                corrected_term = corrector_wc.correct_term(term)
                 if corrected_term not in term2doc_dict.keys():
                     wrong_term_num += 1
                     continue

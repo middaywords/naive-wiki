@@ -2,7 +2,8 @@ from autocorrect import Speller
 import os
 import json
 
-class autocorrectWC():
+
+class AutocorrectWC():
     def __init__(self):
         with open(f"../data/permutermIndex.json", 'r') as loadFile:
             permuterm = json.load(loadFile)
