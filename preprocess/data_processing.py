@@ -24,7 +24,7 @@ def read_title2title_data():
 
 def read_title2doc_data():
     print(datetime.now())
-    data = read_json(filename='../data/term-doc2.json')
+    data = read_json(filename='../data/term-doc3.json')
     print(datetime.now())
 
     return data
@@ -46,7 +46,7 @@ def processing():
             else:
                 generated_data[term_lower] = [key]
     print('keys in total:', len(generated_data.keys()))
-    with open('../data/term-doc2.json', 'w') as f:
+    with open('../data/term-doc3.json', 'w') as f:
         json.dump(generated_data, f)
 
 

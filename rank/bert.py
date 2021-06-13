@@ -21,6 +21,6 @@ class BertWrapper:
             re.sub(r'[^a-zA-Z]', ' ', w).lower() for w in x.split() if
             re.sub(r'[^a-zA-Z]', ' ', w).lower() not in self.stop_words_l))
 
-        document_embeddings = self.sbert_model.encode(documents_df['documents_cleaned'])
+        document_embeddings = self.sbert_model.encode(documents_df['documents_cleaned'], device='cpu')
 
         return document_embeddings

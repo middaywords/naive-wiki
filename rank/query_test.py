@@ -4,6 +4,8 @@
 
 from datetime import datetime
 import re
+
+import autocorrect
 import numpy as np
 
 from data import stopwords
@@ -13,23 +15,24 @@ from rank.doc2vec import Doc2vecWrapper
 from rank.glove import GloveWrapper
 from rank.tf_idf import TfidfWrapper
 from utils.io_utils import read_json
+from utils.wild_card import wild_card, correct_term
 
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics.pairwise import cosine_similarity
 
 
 def read_term2doc_json():
-    data = read_json('../data/term-doc2.json')
+    data = read_json('../data/term-doc3.json')
 
     return data
 
 
-def dis_top10(
+def dis_top(
         distance_mat: np.ndarray,
         doc_list: list):
-    top10_id = distance_mat.argsort(axis=1)[0][-10:][::-1]
+    top_id = distance_mat.argsort(axis=1)[0]
     np_doc_list = np.array(doc_list)
-    final_res = np_doc_list[top10_id]
+    final_res = np_doc_list[top_id]
 
     return final_res
 
@@ -37,14 +40,15 @@ def dis_top10(
 def show_search_res(
         cos_distance_mat: np.ndarray,
         eucli_distance_mat: np.ndarray,
-        doc_list: list):
+        doc_list: list) -> list:
     print('cosine')
-    search_res = dis_top10(cos_distance_mat, doc_list)
+    search_res = dis_top(cos_distance_mat, doc_list)
     print(search_res)
 
-    print('euclidean')
-    search_res = dis_top10(eucli_distance_mat, doc_list)
-    print(search_res)
+    # print('euclidean')
+    # search_res = dis_top10(eucli_distance_mat, doc_list)
+    # print(search_res)
+    return search_res
 
 
 def test_different_ranking_algo(
@@ -93,25 +97,51 @@ def test_different_ranking_algo(
     cosine_distance_mat = cosine_similarity([docs_embeddings[-1]], docs_embeddings[:-1])
     euclidean_distance_mat = euclidean_distances([docs_embeddings[-1]], docs_embeddings[:-1])
     print(datetime.now())
-    show_search_res(cos_distance_mat=cosine_distance_mat,
-                    eucli_distance_mat=euclidean_distance_mat,
-                    doc_list=doc_list)
+    search_res = show_search_res(cos_distance_mat=cosine_distance_mat,
+                                 eucli_distance_mat=euclidean_distance_mat,
+                                 doc_list=doc_list)
+
+    return search_res
+
+
+def match_query_doc(query: str, search_res: list) -> list:
+    for id in range(len(search_res)):
+        if query == search_res[id]:
+            search_res[0], search_res[id] = search_res[id], search_res[0]
+    return search_res
 
 
 def query_test(query: str):
     term2doc_dict = read_term2doc_json()
-    terms = list(filter(None, re.split(r"[ ,_:#!(\){}&\+\*]", query)))
+    query = query.lower()
+    query_terms = list(filter(None, re.split(r"[ ,_:#!(\){}&\+]", query)))
     doc_count = dict()
-    for term in terms:
-        if term not in term2doc_dict.keys():
-            continue
-        for doc in term2doc_dict[term]:
-            if doc in doc_count.keys():
-                doc_count[doc] += 1
+    wrong_term_num = 0
+    for term in query_terms:
+        possible_terms = []
+        # wildcard
+        if term.find('*') >= 0:
+            possible_terms = wild_card(term)
+        else:
+            if term not in term2doc_dict.keys():
+                corrected_term = correct_term(term)
+                if corrected_term not in term2doc_dict.keys():
+                    wrong_term_num += 1
+                    continue
+                else:
+                    possible_terms.append(corrected_term)
             else:
-                doc_count[doc] = 1
-
-    doc_list = list(doc_count.keys())
+                possible_terms.append(term)
+        for possible_term in possible_terms:
+            for doc in term2doc_dict[possible_term]:
+                if doc in doc_count.keys():
+                    doc_count[doc] += 1
+                else:
+                    doc_count[doc] = 1
+    doc_list = []
+    for key in doc_count.keys():
+        if doc_count[key] == len(query_terms) - wrong_term_num:
+            doc_list.append(key)
     doc_list.append(query)
 
     stop_words_l = stopwords.en_stop_words
@@ -121,11 +151,12 @@ def query_test(query: str):
     #         algo=algo,
     #         doc_list=doc_list,
     #         stop_words_l=stop_words_l)
-    test_different_ranking_algo(
-        algo='count',
+    search_res = test_different_ranking_algo(
+        algo='tf-idf',
         doc_list=doc_list,
         stop_words_l=stop_words_l)
+    match_query_doc(query, search_res)
 
 
 if __name__ == '__main__':
-    query_test(query='tencent')
+    query_test(query='ten*nt qq')
