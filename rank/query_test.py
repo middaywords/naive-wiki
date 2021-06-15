@@ -14,17 +14,11 @@ from rank.count import CountWrapper
 from rank.doc2vec import Doc2vecWrapper
 from rank.glove import GloveWrapper
 from rank.tf_idf import TfidfWrapper
-from utils.io_utils import read_json
 from utils.wild_card import AutocorrectWC
+from utils.constants import term2doc_dict
 
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics.pairwise import cosine_similarity
-
-
-def read_term2doc_json():
-    data = read_json('../data/term-doc3.json')
-
-    return data
 
 
 def dis_top(
@@ -111,9 +105,8 @@ def match_query_doc(query: str, search_res: list) -> list:
     return search_res
 
 
-def query_test(query: str):
+def query_test(query: str, top_k=10):
     corrector_wc = AutocorrectWC()
-    term2doc_dict = read_term2doc_json()
     query = query.lower()
     query_terms = list(filter(None, re.split(r"[ ,_:#!(\){}&\+]", query)))
     doc_count = dict()
@@ -156,7 +149,10 @@ def query_test(query: str):
         algo='tf-idf',
         doc_list=doc_list,
         stop_words_l=stop_words_l)
-    match_query_doc(query, search_res)
+    search_res = match_query_doc(query, search_res)
+    search_res = search_res[:top_k]
+
+    return search_res
 
 
 if __name__ == '__main__':
