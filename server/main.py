@@ -1,6 +1,10 @@
 import os
 
 from flask import Flask, jsonify, request, abort
+import sys
+sys.path.append("/Users/tangqidong/Desktop/naive-wiki")
+sys.path.append("/Users/tangqidong/Desktop/naive-wiki/data")
+sys.path.append("/Users/tangqidong/Desktop/naive-wiki/rank")
 from rank.query_test import query_test
 from server.crawl_abstract import get_abstract
 from utils.constants import permuterm, term2doc_dict
@@ -42,6 +46,9 @@ def create_app(test_config=None):
         except:
             abort(400)
         search_res = list(query_test(query, top_k))
+        print("query", query)
+        print("top_k", top_k)
+        print("search_res", search_res)
         return jsonify(search_res)
 
     @app.route('/abstract', methods=["GET"])

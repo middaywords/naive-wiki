@@ -7,6 +7,10 @@ import re
 
 import autocorrect
 import numpy as np
+import sys
+sys.path.append("/Users/tangqidong/Desktop/naive-wiki")
+sys.path.append("/Users/tangqidong/Desktop/naive-wiki/data")
+sys.path.append("/Users/tangqidong/Desktop/naive-wiki/rank")
 
 from data import stopwords
 from rank.bert import BertWrapper
@@ -24,7 +28,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 def dis_top(
         distance_mat: np.ndarray,
         doc_list: list):
-    top_id = distance_mat.argsort(axis=1)[0]
+    top_id = distance_mat.argsort(axis=1)[0][::-1]
     np_doc_list = np.array(doc_list)
     final_res = np_doc_list[top_id]
 

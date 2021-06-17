@@ -26,7 +26,32 @@ def get_abstract(url: str) -> str:
     for res in res_set:
         abstract += recursive_add_text(res.contents)
 
-    return abstract[:150] + '...'
+    return abstract[:450] + '...'
+
+def get_abstracts(doc_names: list) -> list:
+    """
+    :param doc_names: list of wiki url (the key word)
+    :return:
+    """
+    abstracts = []
+    for doc_name in doc_names:
+        url = "https://en.wikipedia.org/wiki/" + doc_name
+        abstract = get_abstract(url)
+        abstracts.append(abstract)
+    return abstracts
+
+def get_urls(doc_names: list) -> list:
+    """
+    :param doc_names: list of wiki url (the key word)
+    :return:
+    """
+    urls = []
+    for doc_name in doc_names:
+        url = "https://en.wikipedia.org/wiki/" + doc_name
+        urls.append(url)
+    return urls
+
+
 
 
 if __name__ == '__main__':
