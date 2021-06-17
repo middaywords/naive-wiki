@@ -8,9 +8,6 @@ import re
 import autocorrect
 import numpy as np
 import sys
-sys.path.append("/Users/tangqidong/Desktop/naive-wiki")
-sys.path.append("/Users/tangqidong/Desktop/naive-wiki/data")
-sys.path.append("/Users/tangqidong/Desktop/naive-wiki/rank")
 
 from data import stopwords
 from rank.bert import BertWrapper
@@ -104,7 +101,7 @@ def test_different_ranking_algo(
 
 def match_query_doc(query: str, search_res: list) -> list:
     for id in range(len(search_res)):
-        if query == search_res[id]:
+        if query == search_res[id].lower():
             search_res[0], search_res[id] = search_res[id], search_res[0]
     return search_res
 
@@ -140,6 +137,10 @@ def query_test(query: str, top_k=10):
     for key in doc_count.keys():
         if doc_count[key] == len(query_terms) - wrong_term_num:
             doc_list.append(key)
+
+    if len(doc_list) == 0:
+        return doc_list
+
     doc_list.append(query)
 
     stop_words_l = stopwords.en_stop_words
@@ -154,7 +155,8 @@ def query_test(query: str, top_k=10):
         doc_list=doc_list,
         stop_words_l=stop_words_l)
     search_res = match_query_doc(query, search_res)
-    search_res = search_res[:top_k]
+    if top_k <= len(search_res):
+        search_res = search_res[:top_k]
 
     return search_res
 
